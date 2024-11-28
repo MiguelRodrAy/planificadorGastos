@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { categories } from "../data/categories";
 import DatePicker from "react-date-picker";
 import "react-calendar/dist/Calendar.css";
@@ -19,7 +19,17 @@ const ExpenseInput = () => {
 
   const [error, setError] = useState("");
 
-  const { dispatch } = useBudget();
+  const { dispatch, state } = useBudget();
+
+  useEffect(() => {
+    if (state.editingExpense) {
+      const expense = state.expenses.filter(
+        (exp) => exp.id === state.editingExpense
+      );
+
+      setExpense(expense[0]);
+    }
+  }, [state.modal]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
@@ -50,10 +60,17 @@ const ExpenseInput = () => {
       return;
     }
 
-    dispatch({
-      type: "ADD_EXPENSE",
-      payload: { expense },
-    });
+    if (state.editingExpense) {
+      dispatch({
+        type: "UPDATE_EXPENSE",
+        payload: { expense: { id: state.editingExpense, ...expense } },
+      });
+    } else {
+      dispatch({
+        type: "ADD_EXPENSE",
+        payload: { expense },
+      });
+    }
 
     setExpense({
       expenseName: "",
@@ -66,7 +83,7 @@ const ExpenseInput = () => {
   return (
     <form className='space-y-5' onSubmit={handleSubmit}>
       <legend className='uppercase text-center text-2xl font-bold border-b-4 py-2 border-primary'>
-        Nuevo Gasto
+        {state.editingExpense ? "Editar Gasto" : "Nuevo Gasto"}
       </legend>
 
       <div className='flex flex-col gap-2'>

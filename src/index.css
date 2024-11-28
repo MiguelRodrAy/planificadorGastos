@@ -21,3 +21,16 @@
     background-position: 100% 50%;
   }
 }
+.swipeable-list-item__leading-actions,
+.swipeable-list-item__trailing-actions {
+  @apply text-white text-lg uppercase font-bold;
+}
+.swipeable-list-item__leading-actions {
+  @apply bg-primary;
+}
+.swipeable-list-item__trailing-actions {
+  @apply bg-secondary;
+}
+.swipeable-list .swipe-action {
+  @apply flex justify-center items-center;
+}

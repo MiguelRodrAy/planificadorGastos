@@ -1,6 +1,6 @@
 import { useBudget } from "./hooks/useBudget";
 import BudgetInput from "./components/BudgetInput";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import BudgetTracker from "./components/BudgetTracker";
 import ExpenseModal from "./components/ExpenseModal";
 import ExpenseList from "./components/ExpenseList";
@@ -13,6 +13,10 @@ function App() {
 
   const isValidBudget = useMemo(() => {
     return state.budget > 0 || isNaN(state.budget);
+  }, [state.budget]);
+
+  useEffect(() => {
+    localStorage.setItem("budget", String(state.budget));
   }, [state.budget]);
 
   return (
