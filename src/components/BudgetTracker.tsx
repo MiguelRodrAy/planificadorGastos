@@ -1,28 +1,43 @@
 import AmountDisplay from "./AmountDisplay";
 import { useBudget } from "../hooks/useBudget";
-import { useMemo } from "react";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+
+function getColor(percentage: number) {
+  if (percentage > 85) return "#DC2626";
+  if (percentage > 60 && percentage <= 85) return "#F97316";
+  if (percentage > 40 && percentage <= 60) return "#FACC15";
+  return "#16A34A";
+}
 
 const BudgetTracker = () => {
-  const { state } = useBudget();
+  const { state, expent, available, dispatch } = useBudget();
+  const percentage = +((expent / state.budget) * 100).toFixed(0);
 
-  const expent = useMemo(() => {
-    return state.expenses.reduce((total, exp) => total + (exp.amount ?? 0), 0);
-  }, [state.expenses]);
-
-  const available = useMemo(() => {
-    return state.budget - expent;
-  }, [state.budget, expent]);
+  const handleReset = () => {
+    dispatch({ type: "RESET_APP" });
+  };
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
       <div className='flex justify-center'>
-        <img src='/grafico.jpg' alt='Gráfico de gastos' />
+        <CircularProgressbar
+          value={percentage}
+          text={`${percentage}% gastado`}
+          styles={buildStyles({
+            textColor: getColor(percentage),
+            pathColor: getColor(percentage),
+            trailColor: "#f5f5f5",
+            textSize: 8,
+          })}
+        />
       </div>
 
       <div className='flex flex-col justify-center items-center gap-8'>
         <button
           type='button'
           className='bg-secondary uppercase font-bold text-white w-full p-2 rounded-lg'
+          onClick={handleReset}
         >
           Reiniciar aplicación
         </button>

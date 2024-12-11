@@ -18,8 +18,9 @@ const ExpenseInput = () => {
   });
 
   const [error, setError] = useState("");
+  const [previousAmount, setPreviousAmount] = useState(0);
 
-  const { dispatch, state } = useBudget();
+  const { dispatch, state, available } = useBudget();
 
   useEffect(() => {
     if (state.editingExpense) {
@@ -28,6 +29,7 @@ const ExpenseInput = () => {
       );
 
       setExpense(expense[0]);
+      setPreviousAmount(expense[0].amount!);
     }
   }, [state.modal]);
 
@@ -57,6 +59,11 @@ const ExpenseInput = () => {
       Object.values(expense).includes(null)
     ) {
       setError("Todos los campos son obligatorios");
+      return;
+    }
+
+    if (expense.amount! - previousAmount > available) {
+      setError("Ese gasto sobrepasa el presupuesto");
       return;
     }
 
